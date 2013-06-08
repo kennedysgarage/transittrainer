@@ -1,0 +1,138 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> 
+<html> 
+<head> 
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/> 
+    <title>Google Maps</title> 
+ 
+    <script src="http://maps.google.com/maps?file=api&amp;v=2&amp;sensor=false&amp;key=ABQIAAAAPDUET0Qt7p2VcSk6JNU1sBSM5jMcmVqUpI7aqV44cW1cEECiThQYkcZUPRJn9vy_TWxWvuLoOfSFBw" type="text/javascript"></script> 
+    <script src="js/elabel.js" type="text/javascript"></script> 
+ 
+  </head> 
+  <body onload="load()" onunload="GUnload()"> 
+
+<
+
+    <canvas id="testcanvas" width="1" height="1" z-index="-100" onclick="getCanvasCoord()" style="background-color:none;"></canvas> 
+	<div id="map" style="width: 550px; height: 450px;"></div>
+ 
+    <!-- a static canvas, used for testing if the browser supports <canvas> --> 
+    
+ 
+ 
+    <script type="text/javascript"> 
+    //<![CDATA[
+ 
+ 
+    // == load the image ==
+    var img = new Image();
+    img.src = "img/cariconl.png";
+ 
+    // ===== Check to see if this browser supports <canvas> ===
+    if (document.getElementById('testcanvas').getContext) {
+      var supportsCanvas = true;
+    } else {
+      var supportsCanvas = false;
+    }
+ 
+    
+    var angle = Math.PI/2; // == <canvas> uses radians, not degrees
+    var map;
+
+function q(event) {
+debugger;
+    event = event || window.event;
+
+    var canvas = document.getElementById('testcanvas'),
+        x = event.pageX - canvas.offsetLeft,
+        y = event.pageY - canvas.offsetTop;
+
+    alert(x + ' ' + y);
+}
+ 
+    // == uses <canvas> to rotate and plot the car ==
+    function rotatecar() {
+      var cosa = Math.cos(angle);
+      var sina = Math.sin(angle);
+      canvas.clearRect(0,0,32,32);     // clear the canvas
+      canvas.save();                   // save the canvas state
+      canvas.rotate(angle);            // rotate the canvas
+      canvas.translate(16*sina+16*cosa,16*cosa-16*sina); // translate the canvas 16,16 in the rotated axes
+      canvas.drawImage(img,-16,-16);   // plot the car
+      canvas.restore();                // restore the canvas state, to undo the rotate and translate
+      angle += 0.1;
+    }
+var prevmarker;
+ 
+ function map_clicked(marker, point,map) {
+
+if (prevmarker ) {
+debugger;
+            map.removeOverlay(prevmarker);
+prevmarker.hide();
+          } 
+            map.addOverlay(new GMarker(point));
+prevmarker = new GMarker(point); 
+}
+    function load() {
+      if (GBrowserIsCompatible()) {
+        // Display the map, with some controls and set the initial location 
+        map = new GMap2(document.getElementById("map"));
+debugger;
+        map.setCenter(new GLatLng(40.767393,-73.970695),13);
+        map.addControl(new GMapTypeControl());
+        map.addControl(new GLargeMapControl());
+ 
+        // == Check if the browser supports <canvas> and if so create a <canvas> inside an ELabel ==
+        if (supportsCanvas) {
+debugger;
+
+// Add 10 markers to the map at random locations
+  var bounds = map.getBounds();
+  var southWest = bounds.getSouthWest();
+  var northEast = bounds.getNorthEast();
+var screenCoords = map.fromLatLngToDivPixel(southWest); 
+var screenCoords1 = map.fromLatLngToDivPixel(northEast); 
+  var lngSpan = northEast.lng() - southWest.lng();
+
+  var latSpan = northEast.lat() - southWest.lat();
+
+var point = new GLatLng(northEast.lng(),northEast.lat());
+map.addOverlay(new GMarker(point));
+point = new GLatLng(southWest.lng(),southWest.lat());
+map.addOverlay(new GMarker(point));
+
+GEvent.addListener(map, "click", function(marker,point){
+map_clicked(marker,point,map);
+});
+
+var canwid = screenCoords1.x;
+var  canlen = screenCoords.y;
+
+
+
+
+
+
+         // label = new ELabel(map.getCenter(), '<canvas id="carcanvas" width="1400" height="1400" onclick="getCanvasCoord()" style="background-color:yellow;"><\/canvas>',null,new GSize(-16,16));
+         // map.addOverlay(label);
+         // canvas = document.getElementById("carcanvas").getContext('2d');
+         // angle = Math.PI/2;
+         // setInterval("rotatecar()",100)
+        } else {
+debugger;
+          // == If the browser doesn't support <canvas> do something else ==
+          map.addOverlay(new GMarker(map.getCenter()));
+        }
+      }
+    }
+    // This Javascript is based on code provided by the
+    // Community Church Javascript Team
+    // http://www.bisphamchurch.org.uk/   
+    // http://econym.org.uk/gmap/
+ 
+    //]]>
+    </script> 
+  </body> 
+ 
+</html> 
